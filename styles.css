@@ -173,9 +173,8 @@ body::before {
 .falling-item {
     position: absolute;
     font-size: 40px;
-    pointer-events: auto;
-    cursor: pointer;
-    animation: fall 4s ease-in forwards, rotate 4s linear infinite;
+    pointer-events: none;
+    animation: fall 4s linear forwards;
     z-index: 100;
 }
 
@@ -185,17 +184,8 @@ body::before {
         opacity: 1;
     }
     to {
-        transform: translateY(400px) translateX(var(--drift));
-        opacity: 0.8;
-    }
-}
-
-@keyframes rotate {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
+        transform: translateY(500px) translateX(var(--drift));
+        opacity: 0;
     }
 }
 

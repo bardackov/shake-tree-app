@@ -180,24 +180,21 @@ function makeOrnamentFall(ornamentElement) {
     ornamentElement.remove();
     ornamentsOnTree--;
 
-    // Auto-collect after falling (3 seconds)
+    // Add score immediately when it starts falling
+    score += 10;
+    updateScore();
+
+    // Haptic feedback
+    if (tg && tg.HapticFeedback) {
+        tg.HapticFeedback.notificationOccurred('success');
+    }
+
+    // Remove after it sinks to bottom (4 seconds to match animation)
     setTimeout(() => {
         if (fallingOrnament.parentNode) {
-            // Collect animation
-            fallingOrnament.classList.add('collected');
-            score += 10;
-            updateScore();
-
-            // Haptic feedback
-            if (tg && tg.HapticFeedback) {
-                tg.HapticFeedback.notificationOccurred('success');
-            }
-
-            setTimeout(() => {
-                fallingOrnament.remove();
-            }, 500);
+            fallingOrnament.remove();
         }
-    }, 3000);
+    }, 4000);
 }
 
 // Update score display
