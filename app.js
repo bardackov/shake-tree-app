@@ -31,7 +31,6 @@ let shakeThreshold = 15;
 
 // Initialize game
 function initGame() {
-    console.log('Initializing game...');
     score = 0;
     updateScore();
     fruitsOnTree = [];
@@ -39,7 +38,6 @@ function initGame() {
     fallingItems.innerHTML = '';
     spawnFruitsOnTree();
     setupShakeDetection();
-    console.log('Game initialized! Fruits on tree:', fruitsOnTree.length);
 }
 
 // Spawn fruits on tree
@@ -70,23 +68,16 @@ function spawnFruitsOnTree() {
 
 // Setup shake detection
 function setupShakeDetection() {
-    console.log('Setting up shake detection...');
-    console.log('Tree element:', tree);
-
     // Always add click handler as fallback
     tree.addEventListener('click', () => {
-        console.log('Tree clicked!');
         shake();
     });
 
     // Add touch handler for mobile
     tree.addEventListener('touchstart', (e) => {
-        console.log('Tree touched!');
         e.preventDefault();
         shake();
     });
-
-    console.log('Click and touch handlers attached');
 
     if (window.DeviceMotionEvent) {
         // Request permission for iOS 13+
@@ -137,12 +128,9 @@ function shake() {
     shakeIndicator.textContent = 'Shaking!';
     shakeIndicator.classList.add('shaking');
 
-    console.log('Shake called! Fruits on tree:', fruitsOnTree.length);
-
     // Make fruits fall
     if (fruitsOnTree.length > 0) {
         const numFruitsToFall = Math.min(3, fruitsOnTree.length);
-        console.log('Making', numFruitsToFall, 'fruits fall');
 
         for (let i = 0; i < numFruitsToFall; i++) {
             const randomIndex = Math.floor(Math.random() * fruitsOnTree.length);
@@ -210,10 +198,8 @@ function makeFruitFall(fruitElement) {
 function collectFruit(fruitElement) {
     if (fruitElement.classList.contains('collected')) return;
 
-    console.log('Collecting fruit! Current score:', score);
     fruitElement.classList.add('collected');
     score += 10;
-    console.log('New score:', score);
     updateScore();
 
     // Haptic feedback
@@ -228,23 +214,21 @@ function collectFruit(fruitElement) {
 
 // Update score display
 function updateScore() {
-    console.log('updateScore called with score:', score);
     scoreElement.textContent = score;
-    console.log('Score element text set to:', scoreElement.textContent);
 
     // Send score to Telegram Cloud Storage if available
     if (tg && tg.CloudStorage) {
         try {
             tg.CloudStorage.setItem('highScore', score.toString());
         } catch (e) {
-            console.log('CloudStorage not available:', e.message);
+            // Silently fail if CloudStorage not available
         }
     } else {
         // Use localStorage as fallback
         try {
             localStorage.setItem('shakeTreeHighScore', score.toString());
         } catch (e) {
-            console.log('localStorage not available');
+            // Silently fail if localStorage not available
         }
     }
 
@@ -266,22 +250,17 @@ resetBtn.addEventListener('click', () => {
 if (tg && tg.CloudStorage) {
     try {
         tg.CloudStorage.getItem('highScore', (error, value) => {
-            if (!error && value) {
-                console.log('Previous high score from Telegram:', value);
-            }
+            // High score loaded from Telegram
         });
     } catch (e) {
-        console.log('CloudStorage not available:', e.message);
+        // Silently fail
     }
 } else {
     // Load from localStorage
     try {
-        const localScore = localStorage.getItem('shakeTreeHighScore');
-        if (localScore) {
-            console.log('Previous high score from localStorage:', localScore);
-        }
+        localStorage.getItem('shakeTreeHighScore');
     } catch (e) {
-        console.log('localStorage not available');
+        // Silently fail
     }
 }
 
