@@ -6,10 +6,23 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    background: linear-gradient(to bottom, #87CEEB 0%, #98D8E8 50%, #90EE90 100%);
+    background: linear-gradient(to bottom, #1a1a2e 0%, #16213e 40%, #0f3460 100%);
     min-height: 100vh;
     overflow: hidden;
     position: relative;
+}
+
+/* Snowflakes animation */
+body::before {
+    content: '❄️ ❄️ ❄️ ❄️ ❄️ ❄️ ❄️ ❄️ ❄️ ❄️';
+    position: absolute;
+    top: -50px;
+    left: 0;
+    right: 0;
+    font-size: 20px;
+    opacity: 0.6;
+    animation: snowfall 10s linear infinite;
+    pointer-events: none;
 }
 
 .game-container {
@@ -27,9 +40,10 @@ body {
     align-items: center;
     margin-bottom: 20px;
     padding: 15px;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.95);
     border-radius: 15px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+    border: 2px solid rgba(255, 215, 0, 0.4);
 }
 
 .score-container {
@@ -45,7 +59,7 @@ body {
 }
 
 .score {
-    color: #ff6b6b;
+    color: #c41e3a;
     font-size: 32px;
 }
 
@@ -56,7 +70,7 @@ body {
 }
 
 .shake-indicator.shaking {
-    color: #ff6b6b;
+    color: #0F5132;
     font-weight: bold;
 }
 
@@ -66,6 +80,15 @@ body {
     }
     50% {
         opacity: 1;
+    }
+}
+
+@keyframes snowfall {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(100vh);
     }
 }
 
@@ -196,10 +219,11 @@ body {
 .instructions {
     text-align: center;
     padding: 20px;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.95);
     border-radius: 15px;
     margin-top: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+    border: 2px solid rgba(255, 215, 0, 0.4);
 }
 
 .instructions p {
@@ -214,11 +238,11 @@ body {
     font-size: 18px;
     font-weight: bold;
     color: white;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #c41e3a 0%, #0F5132 100%);
     border: none;
     border-radius: 25px;
     cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     transition: transform 0.2s, box-shadow 0.2s;
 }
 

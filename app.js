@@ -14,8 +14,8 @@ let isShaking = false;
 let lastShakeTime = 0;
 let fruitsOnTree = [];
 
-// Fruit emojis
-const fruitEmojis = ['🍎', '🍐', '🍊', '🍋', '🍒', '🍑', '🥭', '🍇'];
+// Christmas ornament emojis
+const fruitEmojis = ['🎁', '⭐', '🔔', '🎀', '❄️', '🧦', '🕯️', '🎅'];
 
 // DOM elements
 const scoreElement = document.getElementById('score');
