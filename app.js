@@ -1,7 +1,12 @@
-// Initialize Telegram Web App
-const tg = window.Telegram.WebApp;
-tg.expand();
-tg.enableClosingConfirmation();
+// Check if running inside Telegram
+const isTelegram = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData !== '';
+const tg = isTelegram ? window.Telegram.WebApp : null;
+
+// Initialize Telegram Web App if available
+if (tg) {
+    tg.expand();
+    tg.enableClosingConfirmation();
+}
 
 // Game state
 let score = 0;
@@ -63,15 +68,27 @@ function spawnFruitsOnTree() {
 
 // Setup shake detection
 function setupShakeDetection() {
+    // Always add click handler as fallback
+    tree.addEventListener('click', () => {
+        shake();
+    });
+
+    // Add touch handler for mobile
+    tree.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        shake();
+    });
+
     if (window.DeviceMotionEvent) {
+        // Request permission for iOS 13+
+        if (typeof DeviceMotionEvent.requestPermission === 'function') {
+            shakeIndicator.textContent = 'Tap tree or shake device';
+        } else {
+            shakeIndicator.textContent = 'Shake device or tap tree';
+        }
         window.addEventListener('devicemotion', handleMotion, true);
     } else {
-        shakeIndicator.textContent = 'Device motion not supported';
-
-        // Fallback: allow clicking tree to shake
-        tree.addEventListener('click', () => {
-            shake();
-        });
+        shakeIndicator.textContent = 'Tap the tree!';
     }
 }
 
@@ -132,7 +149,7 @@ function shake() {
     }
 
     // Use Telegram haptic feedback
-    if (tg.HapticFeedback) {
+    if (tg && tg.HapticFeedback) {
         tg.HapticFeedback.impactOccurred('medium');
     }
 
@@ -186,7 +203,7 @@ function collectFruit(fruitElement) {
     updateScore();
 
     // Haptic feedback
-    if (tg.HapticFeedback) {
+    if (tg && tg.HapticFeedback) {
         tg.HapticFeedback.notificationOccurred('success');
     }
 
@@ -199,31 +216,56 @@ function collectFruit(fruitElement) {
 function updateScore() {
     scoreElement.textContent = score;
 
-    // Send score to Telegram
-    if (tg.CloudStorage) {
-        tg.CloudStorage.setItem('highScore', score.toString());
+    // Send score to Telegram Cloud Storage if available
+    if (tg && tg.CloudStorage) {
+        try {
+            tg.CloudStorage.setItem('highScore', score.toString());
+        } catch (e) {
+            console.log('CloudStorage not available:', e.message);
+        }
+    } else {
+        // Use localStorage as fallback
+        try {
+            localStorage.setItem('shakeTreeHighScore', score.toString());
+        } catch (e) {
+            console.log('localStorage not available');
+        }
     }
 }
 
 // Reset game
 resetBtn.addEventListener('click', () => {
-    if (tg.HapticFeedback) {
+    if (tg && tg.HapticFeedback) {
         tg.HapticFeedback.impactOccurred('light');
     }
     initGame();
 });
 
-// Load high score from Telegram Cloud Storage
-if (tg.CloudStorage) {
-    tg.CloudStorage.getItem('highScore', (error, value) => {
-        if (!error && value) {
-            console.log('Previous high score:', value);
+// Load high score from Telegram Cloud Storage or localStorage
+if (tg && tg.CloudStorage) {
+    try {
+        tg.CloudStorage.getItem('highScore', (error, value) => {
+            if (!error && value) {
+                console.log('Previous high score from Telegram:', value);
+            }
+        });
+    } catch (e) {
+        console.log('CloudStorage not available:', e.message);
+    }
+} else {
+    // Load from localStorage
+    try {
+        const localScore = localStorage.getItem('shakeTreeHighScore');
+        if (localScore) {
+            console.log('Previous high score from localStorage:', localScore);
         }
-    });
+    } catch (e) {
+        console.log('localStorage not available');
+    }
 }
 
-// Apply Telegram theme colors
-if (tg.themeParams) {
+// Apply Telegram theme colors if available
+if (tg && tg.themeParams) {
     document.body.style.setProperty('--tg-theme-bg-color', tg.themeParams.bg_color || '#ffffff');
     document.body.style.setProperty('--tg-theme-text-color', tg.themeParams.text_color || '#000000');
 }
@@ -233,17 +275,22 @@ window.addEventListener('load', () => {
     initGame();
 
     // Show ready status to Telegram
-    tg.ready();
+    if (tg) {
+        tg.ready();
 
-    // Set main button for sharing score
-    tg.MainButton.setText('Share Score');
-    tg.MainButton.onClick(() => {
-        const shareText = `I scored ${score} points in Shake Tree! 🌳`;
-        tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(tg.initDataUnsafe.start_param || '')}&text=${encodeURIComponent(shareText)}`);
-    });
+        // Set main button for sharing score
+        if (tg.MainButton) {
+            tg.MainButton.setText('Share Score');
+            tg.MainButton.onClick(() => {
+                const shareText = `I scored ${score} points in Shake Tree! 🌳`;
+                const url = tg.initDataUnsafe?.start_param || window.location.href;
+                tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(shareText)}`);
+            });
 
-    if (score > 0) {
-        tg.MainButton.show();
+            if (score > 0) {
+                tg.MainButton.show();
+            }
+        }
     }
 });
 
@@ -251,7 +298,7 @@ window.addEventListener('load', () => {
 const originalUpdateScore = updateScore;
 updateScore = function() {
     originalUpdateScore();
-    if (score > 0) {
+    if (tg && tg.MainButton && score > 0) {
         tg.MainButton.show();
     }
 };
