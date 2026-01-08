@@ -128,9 +128,12 @@ function shake() {
     shakeIndicator.textContent = 'Shaking!';
     shakeIndicator.classList.add('shaking');
 
+    console.log('Shake called! Fruits on tree:', fruitsOnTree.length);
+
     // Make fruits fall
     if (fruitsOnTree.length > 0) {
         const numFruitsToFall = Math.min(3, fruitsOnTree.length);
+        console.log('Making', numFruitsToFall, 'fruits fall');
 
         for (let i = 0; i < numFruitsToFall; i++) {
             const randomIndex = Math.floor(Math.random() * fruitsOnTree.length);
@@ -198,8 +201,10 @@ function makeFruitFall(fruitElement) {
 function collectFruit(fruitElement) {
     if (fruitElement.classList.contains('collected')) return;
 
+    console.log('Collecting fruit! Current score:', score);
     fruitElement.classList.add('collected');
     score += 10;
+    console.log('New score:', score);
     updateScore();
 
     // Haptic feedback
@@ -214,7 +219,9 @@ function collectFruit(fruitElement) {
 
 // Update score display
 function updateScore() {
+    console.log('updateScore called with score:', score);
     scoreElement.textContent = score;
+    console.log('Score element text set to:', scoreElement.textContent);
 
     // Send score to Telegram Cloud Storage if available
     if (tg && tg.CloudStorage) {
