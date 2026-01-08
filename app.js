@@ -12,7 +12,8 @@ if (tg) {
 let score = 0;
 let isShaking = false;
 let lastShakeTime = 0;
-let fruitsOnTree = [];
+let ornamentsOnTree = 0;
+let maxOrnaments = 20;
 
 // Christmas ornament emojis
 const fruitEmojis = ['🎁', '⭐', '🔔', '🎀', '❄️', '🧦', '🕯️', '🎅'];
@@ -27,43 +28,49 @@ const tree = document.querySelector('.tree');
 
 // Shake detection variables
 let lastX = 0, lastY = 0, lastZ = 0;
-let shakeThreshold = 15;
+let shakeThreshold = 12; // Lower threshold for easier shake detection
 
 // Initialize game
 function initGame() {
     score = 0;
+    ornamentsOnTree = 0;
     updateScore();
-    fruitsOnTree = [];
     fruitsContainer.innerHTML = '';
     fallingItems.innerHTML = '';
-    spawnFruitsOnTree();
     setupShakeDetection();
 }
 
-// Spawn fruits on tree
-function spawnFruitsOnTree() {
-    const fruitPositions = [
-        { left: '30%', top: '20%' },
-        { left: '50%', top: '15%' },
-        { left: '70%', top: '25%' },
-        { left: '25%', top: '35%' },
-        { left: '55%', top: '30%' },
-        { left: '75%', top: '40%' },
-        { left: '35%', top: '45%' },
-        { left: '65%', top: '50%' },
-    ];
+// Add ornament to tree when shaking
+function addOrnamentToTree() {
+    if (ornamentsOnTree >= maxOrnaments) return;
 
-    fruitPositions.forEach((pos, index) => {
-        const fruit = document.createElement('div');
-        fruit.className = 'fruit on-tree';
-        fruit.textContent = fruitEmojis[index % fruitEmojis.length];
-        fruit.style.left = pos.left;
-        fruit.style.top = pos.top;
-        fruit.dataset.index = index;
+    const ornament = document.createElement('div');
+    ornament.className = 'fruit on-tree';
+    ornament.textContent = fruitEmojis[Math.floor(Math.random() * fruitEmojis.length)];
 
-        fruitsContainer.appendChild(fruit);
-        fruitsOnTree.push(fruit);
-    });
+    // Random position on tree
+    const leftPercent = 30 + Math.random() * 40; // 30-70% for tree width
+    const topPercent = 15 + Math.random() * 35; // 15-50% for tree height
+    ornament.style.left = leftPercent + '%';
+    ornament.style.top = topPercent + '%';
+    ornament.style.opacity = '0';
+
+    fruitsContainer.appendChild(ornament);
+    ornamentsOnTree++;
+
+    // Fade in animation
+    setTimeout(() => {
+        ornament.style.transition = 'opacity 0.3s';
+        ornament.style.opacity = '1';
+    }, 10);
+
+    // Auto-fall after 2-4 seconds
+    const fallDelay = 2000 + Math.random() * 2000;
+    setTimeout(() => {
+        if (ornament.parentNode) {
+            makeOrnamentFall(ornament);
+        }
+    }, fallDelay);
 }
 
 // Setup shake detection
@@ -82,13 +89,13 @@ function setupShakeDetection() {
     if (window.DeviceMotionEvent) {
         // Request permission for iOS 13+
         if (typeof DeviceMotionEvent.requestPermission === 'function') {
-            shakeIndicator.textContent = 'Tap tree or shake device';
+            shakeIndicator.textContent = 'Tap tree or shake to grow';
         } else {
-            shakeIndicator.textContent = 'Shake device or tap tree';
+            shakeIndicator.textContent = 'Shake to grow ornaments!';
         }
         window.addEventListener('devicemotion', handleMotion, true);
     } else {
-        shakeIndicator.textContent = 'Tap the tree!';
+        shakeIndicator.textContent = 'Tap tree to grow!';
     }
 }
 
@@ -107,8 +114,8 @@ function handleMotion(event) {
     if (deltaX + deltaY + deltaZ > shakeThreshold) {
         const now = Date.now();
 
-        // Prevent shake spam (minimum 1 second between shakes)
-        if (now - lastShakeTime > 1000) {
+        // Allow more frequent shakes (minimum 300ms between shakes)
+        if (now - lastShakeTime > 300) {
             lastShakeTime = now;
             shake();
         }
@@ -125,91 +132,72 @@ function shake() {
 
     isShaking = true;
     tree.classList.add('shake');
-    shakeIndicator.textContent = 'Shaking!';
+    shakeIndicator.textContent = 'Keep shaking!';
     shakeIndicator.classList.add('shaking');
 
-    // Make fruits fall
-    if (fruitsOnTree.length > 0) {
-        const numFruitsToFall = Math.min(3, fruitsOnTree.length);
-
-        for (let i = 0; i < numFruitsToFall; i++) {
-            const randomIndex = Math.floor(Math.random() * fruitsOnTree.length);
-            const fruit = fruitsOnTree[randomIndex];
-
-            if (fruit) {
-                makeFruitFall(fruit);
-                fruitsOnTree.splice(randomIndex, 1);
-            }
-        }
+    // Add 1-2 ornaments per shake
+    const numToAdd = Math.random() > 0.5 ? 2 : 1;
+    for (let i = 0; i < numToAdd; i++) {
+        addOrnamentToTree();
     }
 
     // Vibrate device if supported
     if (navigator.vibrate) {
-        navigator.vibrate(200);
+        navigator.vibrate(100);
     }
 
     // Use Telegram haptic feedback
     if (tg && tg.HapticFeedback) {
-        tg.HapticFeedback.impactOccurred('medium');
+        tg.HapticFeedback.impactOccurred('light');
     }
 
     setTimeout(() => {
         tree.classList.remove('shake');
-        shakeIndicator.textContent = 'Shake your device!';
+        shakeIndicator.textContent = 'Shake to grow ornaments!';
         shakeIndicator.classList.remove('shaking');
         isShaking = false;
-    }, 500);
+    }, 400);
 }
 
-// Make a fruit fall
-function makeFruitFall(fruitElement) {
-    const rect = fruitElement.getBoundingClientRect();
+// Make an ornament fall and auto-collect
+function makeOrnamentFall(ornamentElement) {
+    const rect = ornamentElement.getBoundingClientRect();
     const containerRect = fruitsContainer.getBoundingClientRect();
 
-    const fallingFruit = document.createElement('div');
-    fallingFruit.className = 'falling-item';
-    fallingFruit.textContent = fruitElement.textContent;
+    const fallingOrnament = document.createElement('div');
+    fallingOrnament.className = 'falling-item';
+    fallingOrnament.textContent = ornamentElement.textContent;
 
     // Position relative to falling items container
-    fallingFruit.style.left = (rect.left - containerRect.left) + 'px';
-    fallingFruit.style.top = (rect.top - containerRect.top) + 'px';
+    fallingOrnament.style.left = (rect.left - containerRect.left) + 'px';
+    fallingOrnament.style.top = (rect.top - containerRect.top) + 'px';
 
     // Random drift for natural fall
     const drift = (Math.random() - 0.5) * 100;
-    fallingFruit.style.setProperty('--drift', `${drift}px`);
+    fallingOrnament.style.setProperty('--drift', `${drift}px`);
 
-    fallingItems.appendChild(fallingFruit);
-    fruitElement.remove();
+    fallingItems.appendChild(fallingOrnament);
+    ornamentElement.remove();
+    ornamentsOnTree--;
 
-    // Add click handler to collect fruit
-    fallingFruit.addEventListener('click', () => {
-        collectFruit(fallingFruit);
-    });
-
-    // Auto-remove after animation (increased to 4 seconds to match CSS)
+    // Auto-collect after falling (3 seconds)
     setTimeout(() => {
-        if (fallingFruit.parentNode) {
-            fallingFruit.remove();
+        if (fallingOrnament.parentNode) {
+            // Collect animation
+            fallingOrnament.classList.add('collected');
+            score += 10;
+            updateScore();
+
+            // Haptic feedback
+            if (tg && tg.HapticFeedback) {
+                tg.HapticFeedback.notificationOccurred('success');
+            }
+
+            setTimeout(() => {
+                fallingOrnament.remove();
+            }, 500);
         }
-    }, 4000);
-}
-
-// Collect a fruit
-function collectFruit(fruitElement) {
-    if (fruitElement.classList.contains('collected')) return;
-
-    fruitElement.classList.add('collected');
-    score += 10;
-    updateScore();
-
-    // Haptic feedback
-    if (tg && tg.HapticFeedback) {
-        tg.HapticFeedback.notificationOccurred('success');
-    }
-
-    setTimeout(() => {
-        fruitElement.remove();
-    }, 500);
+    }, 3000);
 }
 
 // Update score display
