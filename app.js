@@ -231,6 +231,11 @@ function updateScore() {
             console.log('localStorage not available');
         }
     }
+
+    // Show main button when score is earned
+    if (tg && tg.MainButton && score > 0) {
+        tg.MainButton.show();
+    }
 }
 
 // Reset game
@@ -294,11 +299,3 @@ window.addEventListener('load', () => {
     }
 });
 
-// Show main button when score is earned
-const originalUpdateScore = updateScore;
-updateScore = function() {
-    originalUpdateScore();
-    if (tg && tg.MainButton && score > 0) {
-        tg.MainButton.show();
-    }
-};
