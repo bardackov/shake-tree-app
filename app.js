@@ -31,6 +31,7 @@ let shakeThreshold = 15;
 
 // Initialize game
 function initGame() {
+    console.log('Initializing game...');
     score = 0;
     updateScore();
     fruitsOnTree = [];
@@ -38,6 +39,7 @@ function initGame() {
     fallingItems.innerHTML = '';
     spawnFruitsOnTree();
     setupShakeDetection();
+    console.log('Game initialized! Fruits on tree:', fruitsOnTree.length);
 }
 
 // Spawn fruits on tree
@@ -68,16 +70,23 @@ function spawnFruitsOnTree() {
 
 // Setup shake detection
 function setupShakeDetection() {
+    console.log('Setting up shake detection...');
+    console.log('Tree element:', tree);
+
     // Always add click handler as fallback
     tree.addEventListener('click', () => {
+        console.log('Tree clicked!');
         shake();
     });
 
     // Add touch handler for mobile
     tree.addEventListener('touchstart', (e) => {
+        console.log('Tree touched!');
         e.preventDefault();
         shake();
     });
+
+    console.log('Click and touch handlers attached');
 
     if (window.DeviceMotionEvent) {
         // Request permission for iOS 13+
