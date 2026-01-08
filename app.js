@@ -14,6 +14,8 @@ let isShaking = false;
 let lastShakeTime = 0;
 let ornamentsOnTree = 0;
 let maxOrnaments = 20;
+let shakeCount = 0;
+let nextOrnamentShake = getRandomOrnamentDelay();
 
 // Christmas ornament emojis
 const fruitEmojis = ['🎁', '⭐', '🔔', '🎀', '❄️', '🧦', '🕯️', '🎅'];
@@ -30,10 +32,17 @@ const tree = document.querySelector('.tree');
 let lastX = 0, lastY = 0, lastZ = 0;
 let shakeThreshold = 12; // Lower threshold for easier shake detection
 
+// Get random delay for next ornament (5-10 shakes)
+function getRandomOrnamentDelay() {
+    return Math.floor(Math.random() * 6) + 5; // Random between 5 and 10
+}
+
 // Initialize game
 function initGame() {
     score = 0;
     ornamentsOnTree = 0;
+    shakeCount = 0;
+    nextOrnamentShake = getRandomOrnamentDelay();
     updateScore();
     fruitsContainer.innerHTML = '';
     fallingItems.innerHTML = '';
@@ -135,10 +144,18 @@ function shake() {
     shakeIndicator.textContent = 'Keep shaking!';
     shakeIndicator.classList.add('shaking');
 
-    // Add 1-2 ornaments per shake
-    const numToAdd = Math.random() > 0.5 ? 2 : 1;
-    for (let i = 0; i < numToAdd; i++) {
-        addOrnamentToTree();
+    // Increment shake count
+    shakeCount++;
+
+    // Only add ornaments when we reach the random shake count
+    if (shakeCount >= nextOrnamentShake) {
+        const numToAdd = Math.random() > 0.5 ? 2 : 1;
+        for (let i = 0; i < numToAdd; i++) {
+            addOrnamentToTree();
+        }
+        // Reset counter and get new random delay
+        shakeCount = 0;
+        nextOrnamentShake = getRandomOrnamentDelay();
     }
 
     // Vibrate device if supported
@@ -180,8 +197,8 @@ function makeOrnamentFall(ornamentElement) {
     ornamentElement.remove();
     ornamentsOnTree--;
 
-    // Add score immediately when it starts falling
-    score += 10;
+    // Add 1 point when it starts falling
+    score += 1;
     updateScore();
 
     // Haptic feedback
