@@ -172,10 +172,11 @@ body::before {
 
 .falling-item {
     position: absolute;
-    font-size: 30px;
+    font-size: 40px;
     pointer-events: auto;
     cursor: pointer;
-    animation: fall 2s ease-in forwards, rotate 2s linear infinite;
+    animation: fall 4s ease-in forwards, rotate 4s linear infinite;
+    z-index: 100;
 }
 
 @keyframes fall {

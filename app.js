@@ -198,12 +198,12 @@ function makeFruitFall(fruitElement) {
         collectFruit(fallingFruit);
     });
 
-    // Auto-remove after animation
+    // Auto-remove after animation (increased to 4 seconds to match CSS)
     setTimeout(() => {
         if (fallingFruit.parentNode) {
             fallingFruit.remove();
         }
-    }, 2000);
+    }, 4000);
 }
 
 // Collect a fruit
