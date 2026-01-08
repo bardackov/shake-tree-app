@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Shake Tree Game</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <div class="score-container">
+                <span class="score-label">Score:</span>
+                <span class="score" id="score">0</span>
+            </div>
+            <div class="shake-indicator" id="shakeIndicator">
+                Shake your device!
+            </div>
+        </div>
+
+        <div class="tree-container">
+            <svg class="tree" viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+                <!-- Tree trunk -->
+                <rect x="85" y="180" width="30" height="120" fill="#8B4513" rx="5"/>
+
+                <!-- Tree crown layers -->
+                <ellipse cx="100" cy="180" rx="70" ry="50" fill="#2D5016" opacity="0.8"/>
+                <ellipse cx="100" cy="150" rx="65" ry="45" fill="#3A6B1F" opacity="0.9"/>
+                <ellipse cx="100" cy="120" rx="60" ry="40" fill="#4A8C2A"/>
+                <ellipse cx="100" cy="100" rx="50" ry="35" fill="#5FAD3D"/>
+            </svg>
+
+            <!-- Fruits container -->
+            <div class="fruits-container" id="fruitsContainer"></div>
+
+            <!-- Falling items container -->
+            <div class="falling-items" id="fallingItems"></div>
+        </div>
+
+        <div class="instructions">
+            <p>🌳 Shake your device to make fruits fall!</p>
+            <p>Tap fruits to collect them</p>
+        </div>
+
+        <button class="reset-btn" id="resetBtn">Reset Game</button>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
