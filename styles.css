@@ -5,23 +5,24 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    background: linear-gradient(to bottom, #1a1a2e 0%, #16213e 40%, #0f3460 100%);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(to bottom, #f5f5f7 0%, #e8e8ed 100%);
     min-height: 100vh;
     overflow: hidden;
     position: relative;
+    color: #1d1d1f;
 }
 
-/* Snowflakes animation */
+/* Snowflakes animation - subtle and minimal */
 body::before {
-    content: '❄️ ❄️ ❄️ ❄️ ❄️ ❄️ ❄️ ❄️ ❄️ ❄️';
+    content: '❄️ ❄️ ❄️ ❄️ ❄️';
     position: absolute;
     top: -50px;
     left: 0;
     right: 0;
-    font-size: 20px;
-    opacity: 0.6;
-    animation: snowfall 10s linear infinite;
+    font-size: 16px;
+    opacity: 0.2;
+    animation: snowfall 15s linear infinite;
     pointer-events: none;
 }
 
@@ -38,40 +39,48 @@ body::before {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-    padding: 15px;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
-    border: 2px solid rgba(255, 215, 0, 0.4);
+    margin-bottom: 24px;
+    padding: 20px 24px;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-radius: 20px;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+    border: 0.5px solid rgba(0, 0, 0, 0.04);
 }
 
 .score-container {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 24px;
-    font-weight: bold;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.4px;
 }
 
 .score-label {
-    color: #555;
+    color: #86868b;
+    font-weight: 500;
 }
 
 .score {
-    color: #c41e3a;
-    font-size: 32px;
+    color: #1d1d1f;
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: -1px;
 }
 
 .shake-indicator {
-    font-size: 14px;
-    color: #666;
+    font-size: 13px;
+    color: #86868b;
+    font-weight: 500;
+    letter-spacing: -0.2px;
     animation: pulse 2s ease-in-out infinite;
 }
 
 .shake-indicator.shaking {
-    color: #0F5132;
-    font-weight: bold;
+    color: #34c759;
+    font-weight: 600;
 }
 
 @keyframes pulse {
@@ -209,42 +218,53 @@ body::before {
 
 .instructions {
     text-align: center;
-    padding: 20px;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 15px;
-    margin-top: 20px;
-    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
-    border: 2px solid rgba(255, 215, 0, 0.4);
+    padding: 24px;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-radius: 20px;
+    margin-top: 24px;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+    border: 0.5px solid rgba(0, 0, 0, 0.04);
 }
 
 .instructions p {
-    margin: 5px 0;
-    color: #555;
-    font-size: 16px;
+    margin: 6px 0;
+    color: #1d1d1f;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: -0.3px;
+    line-height: 1.4;
+}
+
+.instructions p:first-child {
+    font-weight: 600;
 }
 
 .reset-btn {
-    margin-top: 15px;
-    padding: 15px 30px;
-    font-size: 18px;
-    font-weight: bold;
-    color: white;
-    background: linear-gradient(135deg, #c41e3a 0%, #0F5132 100%);
+    margin-top: 16px;
+    padding: 14px 32px;
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.4px;
+    color: #ffffff;
+    background: #007aff;
     border: none;
-    border-radius: 25px;
+    border-radius: 14px;
     cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .reset-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    background: #0051d5;
+    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+    transform: translateY(-1px);
 }
 
 .reset-btn:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transform: scale(0.98);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 /* Responsive adjustments */
